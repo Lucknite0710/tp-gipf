@@ -9,13 +9,11 @@ pipeline {
         }
         stage('Test') {
             steps {
-                node {
-  stage('SonarQube analysis') {
-    withSonarQubeEnv() { // Will pick the global server connection you have configured
-      sh './gradlew sonar'
-    }
-  }
-}
+                stage('SonarQube analysis') {
+                    withSonarQubeEnv() { // Will pick the global server connection you have configured
+                        sh './gradlew sonar'
+                    }
+                }
             }
         }
         stage('Deploy') {
