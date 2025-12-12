@@ -9,12 +9,12 @@ pipeline {
     }
     stage('Build') {
       steps {
-        sh './gradlew --no-daemon -Dhttps.proxyHost=proxy1-rech -Dhttps.proxyPort=3128 clean build'
+        sh './gradlew -Dhttps.proxyHost=proxy1-rech -Dhttps.proxyPort=3128 clean build'
       }
     }
     stage('SonarQube Analysis') {
       steps {
-        sh "./gradlew sonar -Dsonar.projectKey=TP_Controle -Dsonar.projectName=TP_Controle -Dsonar.host.url=http://localhost:9000 -Dsonar.login=$SONAR_TOKEN -Dhttps.proxyHost=proxy1-rech -Dhttps.proxyPort=3128 --no-daemon"
+        sh "./gradlew  -Dsonar.projectKey=TP_Controle -Dsonar.projectName=TP_Controle -Dsonar.host.url=http://localhost:9000 -Dsonar.login=$SONAR_TOKEN -Dhttps.proxyHost=proxy1-rech -Dhttps.proxyPort=3128 sonar"
       }
     }
     stage('Quality Gate') {
