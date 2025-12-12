@@ -1,7 +1,7 @@
 pipeline {
   agent any
   environment {
-    SONAR_TOKEN = credentials('Sonarqube')
+    SONAR_TOKEN = credentials('sonar-token')
   }
   stages {
     stage('Checkout') {
@@ -14,7 +14,7 @@ pipeline {
     }
     stage('SonarQube Analysis') {
       steps {
-        withSonarQubeEnv('SonarQube') {
+        withSonarQubeEnv('sonar-token') {
           sh './gradlew sonarqube --no-daemon -Dsonar.login=$SONAR_TOKEN'
         }
       }
