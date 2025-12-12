@@ -1,51 +1,36 @@
 pipeline {
-    
-    agent any
-    
-    stages {
-
-        stage('build && SonarQube analysis') {
-
-            steps {
-
-                withSonarQubeEnv('sonar.tools.****') {
-
-                 script {
-
-                     cmd.withNexusCredentials {
-
-                            sh 'gradle --info sonarqube  -Dsonar.projectKey=catalog-service -Dsonar.junit.reportPaths=./build/test-results/test -Dsonar.binaries=./build/classes -Dsonar.coverage.jacoco.xmlReportPaths=./build/reports/jacoco/test/html/index.html'
-
-                        }
-
-                }
-
-            }
-
-        }
-
+  agent any
+  environment {
+    SONAR_TOKEN = credentials('sonar-token')
+  }
+  stages {
+    stage('Checkout') {
+      steps { checkout scm }
     }
-
-        stage("Quality Gate") {
-
-            steps {
-
-                timeout(time: 1, unit: 'HOURS') {
-
-                    // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
-
-                    // true = set pipeline to UNSTABLE, false = don't
-
-                    // Requires SonarScanner for Jenkins 2.7+
-
-                    waitForQualityGate abortPipeline: true
-
-                }
-
-            }
-
-        }
-
+    stage('Install') {
+      steps { sh 'npm ci' }
     }
-
+    stage('Build') {
+      steps { sh 'npm run build' }
+    }
+    stage('SonarQube Analysis') {
+      steps {
+        withSonarQubeEnv('SonarQube') {
+          sh 'npm run sonar'
+        }
+      }
+    }
+    stage('Quality Gate') {
+      steps {
+        timeout(time: 1, unit: 'HOURS') {
+          waitForQualityGate abortPipeline: true
+        }
+      }
+    }
+  }
+  post {
+    failure {
+      echo 'Qualité non atteinte – pipeline aborted.'
+    }
+  }
 }
