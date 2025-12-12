@@ -7,16 +7,15 @@ pipeline {
     stage('Checkout') {
       steps { checkout scm }
     }
-    stage('Install') {
-      steps { sh 'npm ci' }
-    }
     stage('Build') {
-      steps { sh 'npm run build' }
+      steps {
+        sh './gradlew clean build --no-daemon'
+      }
     }
     stage('SonarQube Analysis') {
       steps {
         withSonarQubeEnv('SonarQube') {
-          sh 'npm run sonar'
+          sh './gradlew sonarqube --no-daemon -Dsonar.login=$SONAR_TOKEN'
         }
       }
     }
@@ -29,8 +28,11 @@ pipeline {
     }
   }
   post {
+    success {
+      echo 'Build and SonarQube analyse avec succès.'
+    }
     failure {
-      echo 'Qualité non atteinte – pipeline aborted.'
+      echo 'Pipeline échoué.'
     }
   }
 }
