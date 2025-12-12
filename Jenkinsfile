@@ -9,11 +9,14 @@ pipeline {
         }
         stage('Test') {
             steps {
-                stage('SonarQube analysis') {
-                    withSonarQubeEnv() { // Will pick the global server connection you have configured
-                        sh './gradlew sonar'
-                    }
+               post {
+                always {
+                    // Publish JUnit results
+                    junit 'target/surefire-reports/*.xml'
+                    // Publish JaCoCo coverage
+                    jacoco execPattern: 'target/jacoco.exec'
                 }
+            }
             }
         }
         stage('Deploy') {
