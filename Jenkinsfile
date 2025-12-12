@@ -1,7 +1,7 @@
 pipeline {
   agent any
   environment {
-    SONAR_TOKEN=credentials('sonar-token')
+    SONAR_TOKEN = credentials('sonar-token')
   }
   stages {
     stage('Checkout') {
@@ -9,15 +9,12 @@ pipeline {
     }
     stage('Build') {
       steps {
-        sh './gradlew clean build --no-daemon'
+        sh './gradlew clean build --no-daemon -Dhttps.proxyHost=proxy1-rech -Dhttps.proxyPort=3128'
       }
     }
     stage('SonarQube Analysis') {
       steps {
-        withSonarQubeEnv('sonar') {
-          sh './gradlew sonarqube --no-daemon -Dsonar.login=$SONAR_TOKEN
-          ./gradlew -Dhttps.proxyHost=proxy1-rech -Dhttps.proxyPORT=3128'
-        }
+        sh "./gradlew sonar -Dsonar.projectKey=TP_Controle -Dsonar.projectName=TP_Controle -Dsonar.host.url=http://localhost:9000 -Dsonar.login=$SONAR_TOKEN -Dhttps.proxyHost=proxy1-rech -Dhttps.proxyPort=3128 --no-daemon"
       }
     }
     stage('Quality Gate') {
