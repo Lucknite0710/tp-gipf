@@ -9,13 +9,13 @@ pipeline {
         }
         stage('Test') {
             steps {
-                echo 'Testing..'
-                jacoco( 
-                    execPattern: 'target/*.exec',
-                    classPattern: 'target/classes',
-                    sourcePattern: 'src/main/java',
-                    exclusionPattern: 'src/test*'
-                )
+                node {
+  stage('SonarQube analysis') {
+    withSonarQubeEnv() { // Will pick the global server connection you have configured
+      sh './gradlew sonar'
+    }
+  }
+}
             }
         }
         stage('Deploy') {
