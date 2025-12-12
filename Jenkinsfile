@@ -9,7 +9,7 @@ pipeline {
     }
     stage('Build') {
       steps {
-        sh './gradlew clean build --no-daemon -Dhttps.proxyHost=proxy1-rech -Dhttps.proxyPort=3128'
+        sh './gradlew --no-daemon -Dhttps.proxyHost=proxy1-rech -Dhttps.proxyPort=3128 clean build'
       }
     }
     stage('SonarQube Analysis') {
