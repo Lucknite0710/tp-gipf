@@ -16,8 +16,7 @@ pipeline {
       steps {
         withSonarQubeEnv('sonar') {
           sh './gradlew sonarqube --no-daemon -Dsonar.login=$SONAR_TOKEN
-          ./gradlew -Dhttps.proxyHost=proxy1-rech
-                    -Dhttps.proxyPORT=3128'
+          ./gradlew -Dhttps.proxyHost=proxy1-rech -Dhttps.proxyPORT=3128'
         }
       }
     }
